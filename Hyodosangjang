@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 삽입 예제</title>
+    <style>
+        #container {
+            position: relative;
+            display: inline-block;
+        }
+        #baseImage {
+            display: block; /* 기본 이미지를 표시 */
+            width: auto;
+            height: auto;
+        }
+        #overlayImage {
+            position: absolute;
+            top: 228px; /* 원하는 좌표로 조정 */
+            left: 138px; /* 원하는 좌표로 조정 */
+            width: 256px; /* (394 - 138) */
+            height: 267px; /* (495 - 228) */
+            display: none;
+        }
+        #saveButton {
+            background-color: yellow; /* 노란색 배경 */
+            color: black; /* 검은색 글자 */
+            font-size: 20px; /* 글자 크기 */
+            padding: 20px 40px; /* 패딩 */
+            border: none; /* 테두리 제거 */
+            cursor: pointer; /* 커서 변경 */
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <img id="baseImage" src="base.jpg" alt="기본 사진">
+        <img id="overlayImage" src="" alt="삽입할 사진">
+    </div>
+    <input type="file" id="fileInput" accept="image/*">
+    <button id="saveButton" onclick="saveImage()">저장하기</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const overlayImage = document.getElementById('overlayImage');
+                overlayImage.src = e.target.result;
+                overlayImage.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function saveImage() {
+            const baseImage = document.getElementById('baseImage');
+            const overlayImage = document.getElementById('overlayImage');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 기본 이미지가 로드된 후 캔버스 크기 설정 및 이미지 그리기
+            baseImage.onload = function() {
+                canvas.width = baseImage.naturalWidth;
+                canvas.height = baseImage.naturalHeight;
+                ctx.drawImage(baseImage, 0, 0);
+
+                // 오버레이 이미지가 로드된 후 오버레이 이미지 그리기
+                overlayImage.onload = function() {
+                    ctx.drawImage(overlayImage, 138, 228, 256, 267);
+
+                    // 최종 이미지를 다운로드
+                    const link = document.createElement('a');
+                    link.download = 'final_image.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                };
+            };
+            baseImage.src = baseImage.src; // baseImage를 다시 로드하여 onload 이벤트 트리거
+        }
+    </script>
+</body>
+</html>
