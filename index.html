@@ -12,6 +12,8 @@
             height: 100vh;
             background-color: #f0f0f0;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .card {
             background-color: white;
@@ -21,6 +23,7 @@
             max-width: 600px;
             width: 100%;
             text-align: center;
+            box-sizing: border-box;
         }
         #container {
             position: relative;
@@ -35,10 +38,6 @@
         }
         #overlayImage {
             position: absolute;
-            top: 228px; /* 원하는 좌표로 조정 */
-            left: 138px; /* 원하는 좌표로 조정 */
-            width: 256px; /* (394 - 138) */
-            height: 267px; /* (495 - 228) */
             display: none;
         }
         .button {
@@ -97,9 +96,31 @@
                 const overlayImage = document.getElementById('overlayImage');
                 overlayImage.src = e.target.result;
                 overlayImage.style.display = 'block';
+                adjustOverlayImage();
             };
             reader.readAsDataURL(file);
         });
+
+        function adjustOverlayImage() {
+            const baseImage = document.getElementById('baseImage');
+            const overlayImage = document.getElementById('overlayImage');
+            const container = document.getElementById('container');
+
+            const baseImageRect = baseImage.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+
+            const topRatio = 228 / baseImage.naturalHeight;
+            const leftRatio = 138 / baseImage.naturalWidth;
+            const widthRatio = 256 / baseImage.naturalWidth;
+            const heightRatio = 267 / baseImage.naturalHeight;
+
+            overlayImage.style.top = `${topRatio * baseImageRect.height}px`;
+            overlayImage.style.left = `${leftRatio * baseImageRect.width}px`;
+            overlayImage.style.width = `${widthRatio * baseImageRect.width}px`;
+            overlayImage.style.height = `${heightRatio * baseImageRect.height}px`;
+        }
+
+        window.addEventListener('resize', adjustOverlayImage);
 
         function saveImage() {
             const baseImage = document.getElementById('baseImage');
@@ -112,7 +133,7 @@
                 canvas.width = baseImage.naturalWidth;
                 canvas.height = baseImage.naturalHeight;
                 ctx.drawImage(baseImage, 0, 0);
-                ctx.drawImage(overlayImage, 138, 228, 256, 267);
+                ctx.drawImage(overlayImage, baseImage.naturalWidth * 0.276, baseImage.naturalHeight * 0.456, baseImage.naturalWidth * 0.512, baseImage.naturalHeight * 0.534);
 
                 // 최종 이미지를 다운로드
                 const link = document.createElement('a');
@@ -131,7 +152,7 @@
                     ctx.drawImage(baseImage, 0, 0);
 
                     overlayImage.onload = function() {
-                        ctx.drawImage(overlayImage, 138, 228, 256, 267);
+                        ctx.drawImage(overlayImage, baseImage.naturalWidth * 0.276, baseImage.naturalHeight * 0.456, baseImage.naturalWidth * 0.512, baseImage.naturalHeight * 0.534);
 
                         // 최종 이미지를 다운로드
                         const link = document.createElement('a');
