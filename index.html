@@ -89,6 +89,8 @@
     </div>
 
     <script>
+        let overlayImagePosition = { top: 0, left: 0, width: 0, height: 0 };
+
         document.getElementById('fileInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -118,6 +120,13 @@
             overlayImage.style.left = `${leftRatio * baseImageRect.width}px`;
             overlayImage.style.width = `${widthRatio * baseImageRect.width}px`;
             overlayImage.style.height = `${heightRatio * baseImageRect.height}px`;
+
+            overlayImagePosition = {
+                top: topRatio * baseImage.naturalHeight,
+                left: leftRatio * baseImage.naturalWidth,
+                width: widthRatio * baseImage.naturalWidth,
+                height: heightRatio * baseImage.naturalHeight
+            };
         }
 
         window.addEventListener('resize', adjustOverlayImage);
@@ -133,7 +142,7 @@
                 canvas.width = baseImage.naturalWidth;
                 canvas.height = baseImage.naturalHeight;
                 ctx.drawImage(baseImage, 0, 0);
-                ctx.drawImage(overlayImage, 138, 228, 256, 267);
+                ctx.drawImage(overlayImage, overlayImagePosition.left, overlayImagePosition.top, overlayImagePosition.width, overlayImagePosition.height);
 
                 // 최종 이미지를 다운로드
                 const link = document.createElement('a');
@@ -152,7 +161,7 @@
                     ctx.drawImage(baseImage, 0, 0);
 
                     overlayImage.onload = function() {
-                        ctx.drawImage(overlayImage, 138, 228, 256, 267);
+                        ctx.drawImage(overlayImage, overlayImagePosition.left, overlayImagePosition.top, overlayImagePosition.width, overlayImagePosition.height);
 
                         // 최종 이미지를 다운로드
                         const link = document.createElement('a');
