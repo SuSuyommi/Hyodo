@@ -133,7 +133,7 @@
                 canvas.width = baseImage.naturalWidth;
                 canvas.height = baseImage.naturalHeight;
                 ctx.drawImage(baseImage, 0, 0);
-                ctx.drawImage(overlayImage, baseImage.naturalWidth * 0.276, baseImage.naturalHeight * 0.456, baseImage.naturalWidth * 0.512, baseImage.naturalHeight * 0.534);
+                ctx.drawImage(overlayImage, 138, 228, 256, 267);
 
                 // 최종 이미지를 다운로드
                 const link = document.createElement('a');
@@ -152,7 +152,7 @@
                     ctx.drawImage(baseImage, 0, 0);
 
                     overlayImage.onload = function() {
-                        ctx.drawImage(overlayImage, baseImage.naturalWidth * 0.276, baseImage.naturalHeight * 0.456, baseImage.naturalWidth * 0.512, baseImage.naturalHeight * 0.534);
+                        ctx.drawImage(overlayImage, 138, 228, 256, 267);
 
                         // 최종 이미지를 다운로드
                         const link = document.createElement('a');
