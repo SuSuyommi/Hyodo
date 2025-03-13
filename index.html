@@ -59,24 +59,43 @@
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
 
-            // 기본 이미지가 로드된 후 캔버스 크기 설정 및 이미지 그리기
-            baseImage.onload = function() {
+            // 기본 이미지와 오버레이 이미지가 모두 로드된 후 캔버스 크기 설정 및 이미지 그리기
+            if (baseImage.complete && overlayImage.complete) {
                 canvas.width = baseImage.naturalWidth;
                 canvas.height = baseImage.naturalHeight;
                 ctx.drawImage(baseImage, 0, 0);
+                ctx.drawImage(overlayImage, 138, 228, 256, 267);
 
-                // 오버레이 이미지가 로드된 후 오버레이 이미지 그리기
-                overlayImage.onload = function() {
-                    ctx.drawImage(overlayImage, 138, 228, 256, 267);
+                // 최종 이미지를 다운로드
+                const link = document.createElement('a');
+                link.download = 'final_image.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } else {
+                baseImage.onload = function() {
+                    canvas.width = baseImage.naturalWidth;
+                    canvas.height = baseImage.naturalHeight;
+                    ctx.drawImage(baseImage, 0, 0);
 
-                    // 최종 이미지를 다운로드
-                    const link = document.createElement('a');
-                    link.download = 'final_image.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
+                    overlayImage.onload = function() {
+                        ctx.drawImage(overlayImage, 138, 228, 256, 267);
+
+                        // 최종 이미지를 다운로드
+                        const link = document.createElement('a');
+                        link.download = 'final_image.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    };
+
+                    if (overlayImage.complete) {
+                        overlayImage.onload();
+                    }
                 };
-            };
-            baseImage.src = baseImage.src; // baseImage를 다시 로드하여 onload 이벤트 트리거
+
+                if (baseImage.complete) {
+                    baseImage.onload();
+                }
+            }
         }
     </script>
 </body>
